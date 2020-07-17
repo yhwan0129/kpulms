@@ -1,0 +1,102 @@
+[DDL]
+
+CRATE TABLE '주문테이블'(
+'주문번호' varchar(16) NOT NULL,
+'고객번호' varchar(16) NOT NULL,
+'주문일' varchar(8) NOT NULL,
+'주문가격' decimal(15,2) NOT NULL,
+'배송도시' varchar(256),
+'배송완료일' varchar(8),
+'결제금액' varchar(8),
+'할인금액' decimal(15,2) NOT NULL,
+'적립포인트' decimal(15,2) NOT NULL,
+PRIMARY KEY('주문번호'))
+
+CREATE TABLE NEWTABLE AS SELECT * FROM '주문테이블';
+
+SELECT * FROM '주문테이블';
+
+DESC '주문테이블';
+
+ALTER TABLE '주문테이블' CHANGE '배송도시' '배송도시코드' INT;
+
+ALTER TABLE '주문테이블' ADD 'NEWCOLMN' VARCHAR(10);
+
+ALTER TABLE '주문테이블' ADD FOREIGN KEY ('배송도시코드') REFERENCES '도시코드테이블' (code);
+
+
+[DML]
+
+CREATE TABLE employees 
+(
+UID INT NOT NULL,
+PRIMARY KEY(UID)
+);
+
+CREATE TABLE salaries
+(
+emp_no INT NOT NULL,
+salary INT NOT NULL,
+from_date DATE NOT NULL,
+to_date DATE,
+FOREIGN KEY(emp_no) REFERENCES employees (UID) ON DELETE CASCADE,
+PRIMARY KEY(emp_no, from_date));
+
+INSERT INTO employees (UID) VALUES (1002);
+
+INSERT INTO salaries (emp_no, salary, from_date) VALUES (1002, 400000, '2017-07-01');
+
+INSERT INTO salaries VALUES (1002, 4000, '2017-08-02');
+
+INSERT INTO salaries (emp_no, salary, from_date, to_date) VALUES
+(1002, 2000, '2020-09-09', '2013-03-28'),
+(1002, 2000, '2020-09-08', '2013-03-27'),
+(1002, 2000, '2020-09-07', '2013-03-26');
+
+INSERT INTO salaries VALUES
+(1002, 2000, '2020-10-09', '2013-02-28'),
+(1002, 2000, '2020-10-08', '2015-02-27'),
+(1002, 2000, '2020-10-07', '2014-02-26');
+
+SELECT * FROM salaries;
+
+SELECT * FROM salaries WHERE emp_no = 1002;
+
+SELECT emp_no, salary FROM salaries WHERE emp_no = 1002;
+
+SELECT * FROM salaries WHERE from_date = (SELECT MAX(from_date) FROM salaries);
+
+SELECT * FROM salaries ORDER BY from_date DESC LIMIT 1;
+
+UPDATE salaries SET salary = 110000 WHERE emp_no = 1002 AND from_date = '2020-10-09';
+
+DELETE FROM salaries WHERE emp_no = 1002;
+
+CREATE USER SUPER@localhost IDENTIFIED BY 'password';
+
+SHOW GRANTS FOR SUPER@localhost;
+
+DROP user super@localhost;
+
+GRAND SELECT, UPDATE ON db.* TO super;
+
+REVOKE all ON *.* FROM super@localhost;
+
+SELECT @@AUTOCOMMIT;
+
+SET AUTOCOMMIT = TRUE;  // Auto Commit 설정
+SET AUTOCOMMIT = FALSE; // Auto Commit 해지
+
+START TRANSACTION;
+
+savepoint a;
+
+INSERT INTO salaries VALUES(1002, 900, '2014-07-01', '2015-06-30');
+
+SELECT * FROM salaries;
+
+savepoint b;
+
+UPDATE salaries set salary = 1000 where emp_no = 1002; // salary 값이 1000으로 변경
+
+SELECT * FROM salaries;
